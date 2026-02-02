@@ -1,1 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PATTERN PUZZLE 🧩</title>
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color:white;
+  text-align:center;
+}
+.hidden{display:none;}
+button{
+  padding:12px 20px;
+  margin:10px;
+  font-size:18px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+#gameBox{
+  min-height:80px;
+  border:2px dashed white;
+  margin:20px;
+  padding:15px;
+  font-size:30px;
+}
+.icon{
+  font-size:32px;
+  padding:10px;
+  margin:5px;
+  background:white;
+  color:black;
+  border-radius:8px;
+  display:inline-block;
+  cursor:pointer;
+}
+#watermark{
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  opacity:0.5;
+}
+</style>
+</head>
 
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <h1>PATTERN PUZZLE 🧩</h1>
+  <h3>Loading...</h3>
+  <p id="watermark">ADDY</p>
+</div>
+
+<!-- MENU -->
+<div id="menu" class="hidden">
+  <h2>💰 Coins: <span id="coins">0</span></h2>
+  <h1>Select Level</h1>
+  <button onclick="startGame(4,10)">Easy (4)</button><br>
+  <button onclick="startGame(6,20)">Medium (6)</button><br>
+  <button onclick="startGame(8,50)">Hard (8)</button>
+</div>
+
+<!-- GAME -->
+<div id="game" class="hidden">
+  <h2>Remember the Pattern</h2>
+  <div id="gameBox"></div>
+  <div id="choices"></div>
+</div>
+
+<script>
+let icons = ["🔴","🟢","🔵","🟡","🟣","🟠","⭐","❤️"];
+let sequence = [];
+let player = [];
+let reward = 0;
+let coins = 0;
+
+setTimeout(()=>{
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("menu").classList.remove("hidden");
+},2000);
+
+function startGame(count,rew){
+  reward = rew;
+  player=[];
+  sequence = shuffle([...icons]).slice(0,count);
+
+  document.getElementById("menu").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+
+  let box = document.getElementById("gameBox");
+  box.innerHTML = sequence.join(" ");
+
+  setTimeout(()=>{
+    box.innerHTML = "❓ ❓ ❓";
+    showChoices();
+  },5000);
+}
+
+function showChoices(){
+  let c = document.getElementById("choices");
+  c.innerHTML="";
+  shuffle([...sequence]).forEach(i=>{
+    let div=document.createElement("div");
+    div.className="icon";
+    div.innerText=i;
+    div.onclick=()=>select(i);
+    c.appendChild(div);
+  });
+}
+
+function select(i){
+  player.push(i);
+  document.getElementById("gameBox").innerHTML=player.join(" ");
+  if(player.length===sequence.length){
+    check();
+  }
+}
+
+function check(){
+  if(JSON.stringify(player)===JSON.stringify(sequence)){
+    coins+=reward;
+    alert("✅ Correct! +" + reward + " coins");
+  }else{
+    alert("❌ Wrong Pattern");
+  }
+  document.getElementById("coins").innerText=coins;
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("menu").classList.remove("hidden");
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+</script>
+
+</body>
+</html>
